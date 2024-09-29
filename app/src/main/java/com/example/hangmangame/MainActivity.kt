@@ -75,13 +75,15 @@ fun Hangman(modifier: Modifier = Modifier) {
 
 @Composable
 fun Panel1() {
-    // Letter selection panel: A - E buttons
+    // Letter selection panel: A - J buttons in a grid with two rows
     Column(
         modifier = Modifier.padding(16.dp),
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(text = "CHOOSE A LETTER", modifier = Modifier.padding(bottom = 8.dp))
+
+        // First row: A-E
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             LetterButton("A")
             LetterButton("B")
@@ -89,6 +91,21 @@ fun Panel1() {
             LetterButton("D")
             LetterButton("E")
         }
+
+        Spacer(modifier = Modifier.height(8.dp)) // Space between rows
+
+        // Second row: F-J
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            LetterButton("F")
+            LetterButton("G")
+            LetterButton("H")
+            LetterButton("I")
+            LetterButton("J")
+        }
+
+        // Hint field below the alphabet
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(text = "HINT: FOOD", modifier = Modifier.padding(top = 16.dp))
     }
 }
 
