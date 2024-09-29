@@ -60,10 +60,10 @@ fun Hangman(modifier: Modifier = Modifier) {
         // Landscape layout
         Row(
             modifier = modifier
-                .fillMaxSize()
+                .fillMaxWidth()
                 .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             // Layout for Landscape Mode
             Column (
@@ -91,14 +91,19 @@ fun Hangman(modifier: Modifier = Modifier) {
 fun Panel1() {
     // Letter selection panel: A - J buttons in a grid with two rows
     Column(
-        modifier = Modifier.padding(8.dp),
+        modifier = Modifier
+            .padding(8.dp),
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(text = "CHOOSE A LETTER", fontSize = 18.sp, modifier = Modifier.padding(bottom = 8.dp))
 
         // First row: A-f
-        Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+        Row(
+            modifier = Modifier,
+//                .fillMaxWidth()
+//                .weight(1f),
+            horizontalArrangement = Arrangement.spacedBy(4.dp)) {
             LetterButton("A")
             LetterButton("B")
             LetterButton("C")
@@ -123,7 +128,11 @@ fun Panel1() {
 
         // Third row: m-r
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-            LetterButton("M")
+            LetterButton(
+                letter = "M",
+                modifier = Modifier
+                    .weight(1f)
+            )
             LetterButton("N")
             LetterButton("O")
             LetterButton("P")
@@ -146,7 +155,7 @@ fun Panel1() {
 
         Spacer(modifier = Modifier.height(3.dp)) // Space between rows
 
-        // Fifth row: y-Yz
+        // Fifth row: y-z
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
             LetterButton("Y")
             LetterButton("Z")
@@ -160,10 +169,11 @@ fun LetterButton(letter: String, modifier: Modifier = Modifier) {
         onClick = { /* Handle letter selection */ },
         shape = RoundedCornerShape(4.dp),
         modifier = Modifier
-            .size(36.dp) // Square size for compact, uniform buttons
-            .padding(2.dp) // Reduce padding for a tighter layout
+            .size(38.dp) // Slightly smaller button size for compact and visibility
+            .padding(2.dp), // Reduce padding for a tighter layout
+        contentPadding = PaddingValues(0.dp) // Remove default content padding
     ) {
-        Text(text = letter) // Adjust text size to fit the button
+        Text(text = letter, fontSize = 16.sp) // Adjust font size for better fit
     }
 }
 
@@ -176,7 +186,10 @@ fun Panel2() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(text = "HINT: FOOD")
-        Button(onClick = { /*TODO*/ }) {
+        Button(
+            onClick = { /*TODO*/ },
+            contentPadding = PaddingValues(0.dp) // Remove default content padding
+        ) {
             Text(text = "Use Hint")
         }
     }
