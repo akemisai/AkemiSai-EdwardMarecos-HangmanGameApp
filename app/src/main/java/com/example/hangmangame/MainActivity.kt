@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.hangmangame.ui.theme.HangmanGameTheme
 
 class MainActivity : ComponentActivity() {
@@ -77,14 +78,14 @@ fun Hangman(modifier: Modifier = Modifier) {
 fun Panel1() {
     // Letter selection panel: A - J buttons in a grid with two rows
     Column(
-        modifier = Modifier.padding(16.dp),
+        modifier = Modifier.padding(8.dp),
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(text = "CHOOSE A LETTER", modifier = Modifier.padding(bottom = 8.dp))
+        Text(text = "CHOOSE A LETTER", fontSize = 18.sp, modifier = Modifier.padding(bottom = 8.dp))
 
         // First row: A-E
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
             LetterButton("A")
             LetterButton("B")
             LetterButton("C")
@@ -92,10 +93,10 @@ fun Panel1() {
             LetterButton("E")
         }
 
-        Spacer(modifier = Modifier.height(8.dp)) // Space between rows
+        Spacer(modifier = Modifier.height(3.dp)) // Space between rows
 
         // Second row: F-J
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
             LetterButton("F")
             LetterButton("G")
             LetterButton("H")
@@ -103,16 +104,59 @@ fun Panel1() {
             LetterButton("J")
         }
 
+        Spacer(modifier = Modifier.height(3.dp)) // Space between rows
+
+        // Third row: K-O
+        Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            LetterButton("K")
+            LetterButton("L")
+            LetterButton("M")
+            LetterButton("N")
+            LetterButton("O")
+        }
+
+        Spacer(modifier = Modifier.height(3.dp)) // Space between rows
+
+        // Fourth row: P-T
+        Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            LetterButton("P")
+            LetterButton("Q")
+            LetterButton("R")
+            LetterButton("S")
+            LetterButton("T")
+        }
+
+        Spacer(modifier = Modifier.height(3.dp)) // Space between rows
+
+        // Fifth row: U-Y
+        Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            LetterButton("U")
+            LetterButton("V")
+            LetterButton("W")
+            LetterButton("X")
+            LetterButton("Y")
+        }
+
+        // Last row: Z
+        Row(horizontalArrangement = Arrangement.Center) {
+            LetterButton("Z")
+        }
+
         // Hint field below the alphabet
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(text = "HINT: FOOD", modifier = Modifier.padding(top = 16.dp))
+        Spacer(modifier = Modifier.height(12.dp))
+        Text(text = "HINT: FOOD", modifier = Modifier.padding(top = 12.dp), fontSize = 16.sp)
     }
 }
 
 @Composable
-fun LetterButton(letter: String) {
-    Button(onClick = { /* Handle letter selection */ }) {
-        Text(text = letter)
+fun LetterButton(letter: String, modifier: Modifier = Modifier) {
+    Button(
+        onClick = { /* Handle letter selection */ },
+        modifier = Modifier
+            .size(48.dp) // Square size for compact, uniform buttons
+            .padding(2.dp) // Reduce padding for a tighter layout
+    ) {
+        Text(text = letter, fontSize = 16.sp) // Adjust text size to fit the button
     }
 }
 
