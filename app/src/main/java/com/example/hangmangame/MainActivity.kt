@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -65,11 +66,23 @@ fun Hangman(modifier: Modifier = Modifier) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Layout for Landscape Mode
-            Panel1() // Letter selection panel
-            Spacer(modifier = Modifier.width(16.dp)) // Space between panels
-            Panel2() // Hint button panel
-            Spacer(modifier = Modifier.width(16.dp)) // Space between panels
-            Panel3() // Main game play panel
+            Column (
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Panel1() // Letter selection panel
+                Spacer(modifier = Modifier.width(16.dp)) // Space between panels
+                Panel2() // Hint button panel
+            }
+            Column (
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Spacer(modifier = Modifier.width(16.dp)) // Space between panels
+                Panel3() // Main game play panel
+            }
         }
     }
 }
@@ -84,67 +97,60 @@ fun Panel1() {
     ) {
         Text(text = "CHOOSE A LETTER", fontSize = 18.sp, modifier = Modifier.padding(bottom = 8.dp))
 
-        // First row: A-E
+        // First row: A-f
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
             LetterButton("A")
             LetterButton("B")
             LetterButton("C")
             LetterButton("D")
             LetterButton("E")
+            LetterButton("F")
         }
 
         Spacer(modifier = Modifier.height(3.dp)) // Space between rows
 
-        // Second row: F-J
+        // Second row: h-l
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-            LetterButton("F")
             LetterButton("G")
             LetterButton("H")
             LetterButton("I")
             LetterButton("J")
+            LetterButton("K")
+            LetterButton("L")
         }
 
         Spacer(modifier = Modifier.height(3.dp)) // Space between rows
 
-        // Third row: K-O
+        // Third row: m-r
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-            LetterButton("K")
-            LetterButton("L")
             LetterButton("M")
             LetterButton("N")
             LetterButton("O")
-        }
-
-        Spacer(modifier = Modifier.height(3.dp)) // Space between rows
-
-        // Fourth row: P-T
-        Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
             LetterButton("P")
             LetterButton("Q")
             LetterButton("R")
-            LetterButton("S")
-            LetterButton("T")
+
         }
 
         Spacer(modifier = Modifier.height(3.dp)) // Space between rows
 
-        // Fifth row: U-Y
+        // Fourth row: s-x
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            LetterButton("S")
+            LetterButton("T")
             LetterButton("U")
             LetterButton("V")
             LetterButton("W")
             LetterButton("X")
-            LetterButton("Y")
         }
 
-        // Last row: Z
-        Row(horizontalArrangement = Arrangement.Center) {
+        Spacer(modifier = Modifier.height(3.dp)) // Space between rows
+
+        // Fifth row: y-Yz
+        Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            LetterButton("Y")
             LetterButton("Z")
         }
-
-        // Hint field below the alphabet
-        Spacer(modifier = Modifier.height(12.dp))
-        Text(text = "HINT: FOOD", modifier = Modifier.padding(top = 12.dp), fontSize = 16.sp)
     }
 }
 
@@ -152,11 +158,12 @@ fun Panel1() {
 fun LetterButton(letter: String, modifier: Modifier = Modifier) {
     Button(
         onClick = { /* Handle letter selection */ },
+        shape = RoundedCornerShape(4.dp),
         modifier = Modifier
-            .size(48.dp) // Square size for compact, uniform buttons
+            .size(36.dp) // Square size for compact, uniform buttons
             .padding(2.dp) // Reduce padding for a tighter layout
     ) {
-        Text(text = letter, fontSize = 16.sp) // Adjust text size to fit the button
+        Text(text = letter) // Adjust text size to fit the button
     }
 }
 
