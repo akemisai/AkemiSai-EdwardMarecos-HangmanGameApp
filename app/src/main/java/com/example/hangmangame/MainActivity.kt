@@ -4,13 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -66,20 +60,79 @@ fun Hangman(modifier: Modifier = Modifier) {
             modifier = modifier
                 .fillMaxSize()
                 .padding(16.dp),
-            horizontalArrangement = Arrangement.Center,
+            horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Layout for Landscape Mode
-            Text(text = "Landscape Mode - Guess the Word!")
-            Spacer(modifier = Modifier.width(16.dp))
-            Button(onClick = { /*TODO*/ }) {
-                Text(text = "Reset Game")
-            }
+            Panel1() // Letter selection panel
+            Spacer(modifier = Modifier.width(16.dp)) // Space between panels
+            Panel2() // Hint button panel
+            Spacer(modifier = Modifier.width(16.dp)) // Space between panels
+            Panel3() // Main game play panel
         }
     }
 }
 
-@Preview(showBackground = true)
+@Composable
+fun Panel1() {
+    // Letter selection panel: A - E buttons
+    Column(
+        modifier = Modifier.padding(16.dp),
+        verticalArrangement = Arrangement.SpaceEvenly,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(text = "CHOOSE A LETTER", modifier = Modifier.padding(bottom = 8.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            LetterButton("A")
+            LetterButton("B")
+            LetterButton("C")
+            LetterButton("D")
+            LetterButton("E")
+        }
+    }
+}
+
+@Composable
+fun LetterButton(letter: String) {
+    Button(onClick = { /* Handle letter selection */ }) {
+        Text(text = letter)
+    }
+}
+
+@Composable
+fun Panel2() {
+    // Hint button panel
+    Column(
+        modifier = Modifier.padding(16.dp),
+        verticalArrangement = Arrangement.SpaceEvenly,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(text = "HINT: FOOD")
+        Button(onClick = { /*TODO*/ }) {
+            Text(text = "Use Hint")
+        }
+    }
+}
+
+@Composable
+fun Panel3() {
+    // Main game play panel (Hangman and word display placeholder)
+    Column(
+        modifier = Modifier.padding(16.dp),
+        verticalArrangement = Arrangement.SpaceEvenly,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(text = "Hangman Drawing Here")
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(text = "_ _ _ _ _")  // Placeholder for the word
+    }
+}
+
+@Preview(
+    showSystemUi = true,
+    showBackground = true,
+    device = "spec:width=411dp,height=891dp,dpi=420, isRound=false,chinSize=0dp,orientation=landscape"
+)
 @Composable
 fun HangmanPreview() {
     HangmanGameTheme {
