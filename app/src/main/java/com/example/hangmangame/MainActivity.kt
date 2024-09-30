@@ -51,7 +51,6 @@ fun Hangman(modifier: Modifier = Modifier) {
     )
     var currentWord by remember { mutableStateOf(wordHints.keys.random()) } // Select a random word
     var currentHint by remember { mutableStateOf(wordHints[currentWord]!!) } // Get corresponding hint
-    var wrongGuesses by remember { mutableStateOf(0) }
     var hintClickCount by remember { mutableStateOf(0) }
     var remainingTurns by remember { mutableStateOf(6) }
     var hintMessage by remember { mutableStateOf("") } // State variable for the hint message
@@ -257,15 +256,7 @@ fun Panel2(
     disabledLetters: List<Char> // Add this parameter
 ) {
     // Create buttons for each remaining letter
-    Row {
-        remainingLetters.forEach { letter ->
-            Button(onClick = {
-                // Handle letter selection
-            }, enabled = letter !in disabledLetters) { // Use the passed parameter
-                Text(letter.toString())
-            }
-        }
-    }
+
 
     Button(onClick = onHintClicked) {
         Text("Hint")
