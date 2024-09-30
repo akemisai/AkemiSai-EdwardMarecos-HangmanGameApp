@@ -18,7 +18,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -134,7 +133,9 @@ fun Hangman(modifier: Modifier = Modifier) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Spacer(modifier = Modifier.width(16.dp)) // Space between panels
-                Panel3() // Main game play panel
+                Panel3(
+                    remainingTurns = remainingTurns,
+                ) // Main game play panel
             }
         }
     }
@@ -280,7 +281,9 @@ fun Panel2(
 
 
 @Composable
-fun Panel3() {
+fun Panel3(
+    remainingTurns: Int
+) {
     // Main game play panel (Hangman and word display placeholder)
     Column(
         modifier = Modifier.padding(16.dp),
@@ -288,8 +291,18 @@ fun Panel3() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(text = "Hangman Drawing Here")
+        val imageResId = when (remainingTurns) {
+            6 -> R.drawable.hangman6
+            5 -> R.drawable.hangman5
+            4 -> R.drawable.hangman4
+            3 -> R.drawable.hangman3
+            2 -> R.drawable.hangman2
+            1 -> R.drawable.hangman1
+            else -> R.drawable.hangman0 // Default case for when the player loses
+        }
+
         Image(
-            painter = painterResource(id = R.drawable.hangman0),
+            painter = painterResource(id = imageResId),
             contentDescription = null,
             modifier = Modifier.size(150.dp)
         )
