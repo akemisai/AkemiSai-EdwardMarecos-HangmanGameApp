@@ -83,7 +83,7 @@ fun Hangman(modifier: Modifier = Modifier) {
                 Text(text = "Reset Game")
             }
             Panel1()
-            Panel3(remainingTurns = remainingTurns)
+            Panel3(remainingTurns = remainingTurns, wordLength = currentWord.length)
         }
     } else {
         // Landscape layout
@@ -140,6 +140,7 @@ fun Hangman(modifier: Modifier = Modifier) {
                 Spacer(modifier = Modifier.width(16.dp)) // Space between panels
                 Panel3(
                     remainingTurns = remainingTurns,
+                    wordLength = currentWord.length
                 ) // Main game play panel
             }
         }
@@ -287,7 +288,8 @@ fun Panel2(
 
 @Composable
 fun Panel3(
-    remainingTurns: Int
+    remainingTurns: Int,
+    wordLength: Int
 ) {
     // Main game play panel (Hangman and word display placeholder)
     Column(
@@ -310,6 +312,7 @@ fun Panel3(
             1 -> R.drawable.hangman1
             0 -> R.drawable.hangman0
             else -> R.drawable.hangman0 // Default case for when the player loses
+
         }
 
         Image(
