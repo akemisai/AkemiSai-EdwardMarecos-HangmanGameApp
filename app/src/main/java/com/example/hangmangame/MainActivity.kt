@@ -53,8 +53,8 @@ fun Hangman(modifier: Modifier = Modifier) {
     )
     var currentWord by remember { mutableStateOf(wordHints.keys.random()) } // Select a random word
     var currentHint by remember { mutableStateOf(wordHints[currentWord]!!) } // Get corresponding hint
-    var hintClickCount by remember { mutableStateOf(0) }
-    var remainingTurns by remember { mutableStateOf(6) }
+    var hintLeft by remember { mutableStateOf(3) }
+    var remainingTurns by remember { mutableStateOf(11) }
     var hintMessage by remember { mutableStateOf("") } // State variable for the hint message
     var showHint by remember { mutableStateOf(false) } // Flag to show hint
     val context = LocalContext.current
@@ -97,31 +97,34 @@ fun Hangman(modifier: Modifier = Modifier) {
             Panel1() // Letter selection panel
             Spacer(modifier = Modifier.width(16.dp)) // Space between panels
             Panel2(
-                hintClickCount = hintClickCount,
+                hintLeft = hintLeft,
                 remainingTurns = remainingTurns,
                 onHintClicked = {
-                    when (hintClickCount) {
-                        0 -> {
+                    when (hintLeft) {
+                        3 -> {
                             hintMessage = currentHint // Set the hint message
                             showHint = true // Show the hint
+                            hintLeft--
                         } // Show the hint on the first click
-                        1 -> {
+                        2 -> {
                             if (remainingTurns > 1) {
                                 disabledLetters = disableHalfIncorrectLetters(remainingLetters, currentWord)
                                 remainingTurns--
+                                hintLeft--
                             }
                         }
-                        2 -> {
+                        1 -> {
                             if (remainingTurns > 1) {
                                 showVowels(remainingLetters) // Implement this function
                                 remainingTurns--
+                                hintLeft--
                             }
                         }
                         else -> {
                             Toast.makeText(context, "Hint not available", Toast.LENGTH_SHORT).show()
                         }
                     }
-                    hintClickCount++
+
                 },
                 remainingLetters = remainingLetters, // Pass the temporary remaining letters
                 hintMessage = hintMessage,
@@ -253,7 +256,7 @@ fun disableHalfIncorrectLetters(remainingLetters: List<Char>, currentWord: Strin
 
 @Composable
 fun Panel2(
-    hintClickCount: Int,
+    hintLeft: Int,
     remainingTurns: Int,
     onHintClicked: () -> Unit,
     remainingLetters: List<Char>,
@@ -269,7 +272,7 @@ fun Panel2(
         Button(onClick = onHintClicked) {
             Text("Hint")
         } // Hint button
-        Text(text = "Hint Click Count: $hintClickCount")
+        Text(text = "$hintLeft hints left")
         Text(text = "Hint: $hintMessage")
     }
     // Create buttons for each remaining letter
