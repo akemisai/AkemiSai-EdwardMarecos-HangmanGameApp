@@ -292,12 +292,18 @@ fun Panel3(
     ) {
         Text(text = "Hangman Drawing Here")
         val imageResId = when (remainingTurns) {
+            11 -> R.drawable.hangman11
+            10 -> R.drawable.hangman10
+            9 -> R.drawable.hangman9
+            8 -> R.drawable.hangman8
+            7 -> R.drawable.hangman7
             6 -> R.drawable.hangman6
             5 -> R.drawable.hangman5
             4 -> R.drawable.hangman4
             3 -> R.drawable.hangman3
             2 -> R.drawable.hangman2
             1 -> R.drawable.hangman1
+            0 -> R.drawable.hangman0
             else -> R.drawable.hangman0 // Default case for when the player loses
         }
 
