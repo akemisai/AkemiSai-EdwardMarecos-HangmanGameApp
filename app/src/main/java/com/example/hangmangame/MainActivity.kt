@@ -1,6 +1,7 @@
 package com.example.hangmangame
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -10,13 +11,19 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.hangmangame.ui.theme.HangmanGameTheme
+import kotlin.reflect.KProperty
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,6 +43,25 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Hangman(modifier: Modifier = Modifier) {
+    // Game state variable
+    val wordHints = mapOf(
+        "APPLE" to "Food",
+        "DOG" to "Animal",
+        "PENCIL" to "Stationery",
+    )
+    var currentWord by remember { mutableStateOf(wordHints.keys.random()) } // Select a random word
+    var currentHint by remember { mutableStateOf(wordHints[currentWord]!!) } // Get corresponding hint
+    var wrongGuesses by remember { mutableStateOf(0) }
+    var hintClickCount by remember { mutableStateOf(0) }
+    var remainingTurns by remember { mutableStateOf(6) }
+    var hintMessage by remember { mutableStateOf("") } // State variable for the hint message
+    var showHint by remember { mutableStateOf(false) } // Flag to show hint
+    val context = LocalContext.current
+
+    // Temporary placeholder for remaining letters until Panel 1 is complete
+    var remainingLetters by remember { mutableStateOf(('A'..'Z').toList()) }
+    var disabledLetters by remember { mutableStateOf<List<Char>>(emptyList()) }
+
     // Detect the current orientation using LocalConfiguration
     val configuration = LocalConfiguration.current
     val isPortrait = configuration.orientation == android.content.res.Configuration.ORIENTATION_PORTRAIT
@@ -65,16 +91,7 @@ fun Hangman(modifier: Modifier = Modifier) {
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            // Layout for Landscape Mode
-            Column (
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Panel1() // Letter selection panel
-                Spacer(modifier = Modifier.width(16.dp)) // Space between panels
-                Panel2() // Hint button panel
-            }
+            // Layout for Landscape Modd
             Column (
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.Center,
@@ -83,8 +100,46 @@ fun Hangman(modifier: Modifier = Modifier) {
                 Spacer(modifier = Modifier.width(16.dp)) // Space between panels
                 Panel3() // Main game play panel
             }
+            Panel1() // Letter selection panel
+            Spacer(modifier = Modifier.width(16.dp)) // Space between panels
+            Panel2(
+                hintClickCount = hintClickCount,
+                remainingTurns = remainingTurns,
+                onHintClicked = {
+                    when (hintClickCount) {
+                        0 -> {
+                            hintMessage = currentHint // Set the hint message
+                            showHint = true // Show the hint
+                        } // Show the hint on the first click
+                        1 -> {
+                            if (remainingTurns > 1) {
+                                disabledLetters = disableHalfIncorrectLetters(remainingLetters, currentWord)
+                                remainingTurns--
+                            }
+                        }
+                        2 -> {
+                            if (remainingTurns > 1) {
+                                showVowels(remainingLetters) // Implement this function
+                                remainingTurns--
+                            }
+                        }
+                        else -> {
+                            Toast.makeText(context, "Hint not available", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    hintClickCount++
+                },
+                remainingLetters = remainingLetters, // Pass the temporary remaining letters
+                disabledLetters = disabledLetters // Pass the disabled letters
+            ) // Hint button panel
+            Spacer(modifier = Modifier.width(16.dp)) // Space between panels
+            Panel3() // Main game play panel
         }
     }
+}
+
+private operator fun Any.getValue(nothing: Nothing?, property: KProperty<*>): Any {
+    TODO("Not yet implemented")
 }
 
 @Composable
@@ -163,6 +218,8 @@ fun Panel1() {
     }
 }
 
+// Helper funcition for Panel1
+
 @Composable
 fun LetterButton(letter: String, modifier: Modifier = Modifier) {
     Button(
@@ -177,23 +234,45 @@ fun LetterButton(letter: String, modifier: Modifier = Modifier) {
     }
 }
 
+// Helper function for Panel2
+fun showVowels(remainingLetters: List<Char>): List<Char> {
+    val vowels = listOf('A', 'E', 'I', 'O', 'U')
+    val vowelsToShow = remainingLetters.filter { it in vowels }
+    return vowelsToShow
+}
+
+fun disableHalfIncorrectLetters(remainingLetters: List<Char>, currentWord: String): List<Char> {
+    val incorrectLetters = remainingLetters.filter { it !in currentWord }
+    val lettersToDisableCount = incorrectLetters.size / 2
+    val lettersToDisable = incorrectLetters.shuffled().take(lettersToDisableCount)
+    return lettersToDisable
+}
+
 @Composable
-fun Panel2() {
-    // Hint button panel
-    Column(
-        modifier = Modifier.padding(16.dp),
-        verticalArrangement = Arrangement.SpaceEvenly,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(text = "HINT: FOOD")
-        Button(
-            onClick = { /*TODO*/ },
-            contentPadding = PaddingValues(0.dp) // Remove default content padding
-        ) {
-            Text(text = "Use Hint")
+fun Panel2(
+    hintClickCount: Int,
+    remainingTurns: Int,
+    onHintClicked: () -> Unit,
+    remainingLetters: List<Char>,
+    disabledLetters: List<Char> // Add this parameter
+) {
+    // Create buttons for each remaining letter
+    Row {
+        remainingLetters.forEach { letter ->
+            Button(onClick = {
+                // Handle letter selection
+            }, enabled = letter !in disabledLetters) { // Use the passed parameter
+                Text(letter.toString())
+            }
         }
     }
+
+    Button(onClick = onHintClicked) {
+        Text("Hint")
+    }
 }
+
+
 
 @Composable
 fun Panel3() {
