@@ -82,6 +82,8 @@ fun Hangman(modifier: Modifier = Modifier) {
             Button(onClick = { /*TODO*/ }) {
                 Text(text = "Reset Game")
             }
+            Panel1()
+            Panel3(remainingTurns = remainingTurns)
         }
     } else {
         // Landscape layout
