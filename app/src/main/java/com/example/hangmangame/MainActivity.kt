@@ -83,7 +83,7 @@ fun Hangman(modifier: Modifier = Modifier) {
                 Text(text = "Reset Game")
             }
             Panel1()
-            Panel3(remainingTurns = remainingTurns, wordLength = currentWord.length)
+            Panel3(remainingTurns = remainingTurns, currentWord = currentWord, disabledLetters = disabledLetters)
         }
     } else {
         // Landscape layout
@@ -94,7 +94,7 @@ fun Hangman(modifier: Modifier = Modifier) {
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            // Layout for Landscape Modd
+            // Layout for Landscape Mode
 
             Panel1() // Letter selection panel
             Spacer(modifier = Modifier.width(16.dp)) // Space between panels
@@ -140,7 +140,8 @@ fun Hangman(modifier: Modifier = Modifier) {
                 Spacer(modifier = Modifier.width(16.dp)) // Space between panels
                 Panel3(
                     remainingTurns = remainingTurns,
-                    wordLength = currentWord.length
+                    currentWord = currentWord,
+                    disabledLetters = disabledLetters
                 ) // Main game play panel
             }
         }
@@ -227,8 +228,7 @@ fun Panel1() {
     }
 }
 
-// Helper funcition for Panel1
-
+// Helper function for Panel1
 @Composable
 fun LetterButton(letter: String, modifier: Modifier = Modifier) {
     Button(
@@ -255,6 +255,20 @@ fun disableHalfIncorrectLetters(remainingLetters: List<Char>, currentWord: Strin
     val lettersToDisableCount = incorrectLetters.size / 2
     val lettersToDisable = incorrectLetters.shuffled().take(lettersToDisableCount)
     return lettersToDisable
+}
+
+// Helper function for Panel3
+@Composable
+fun WordDisplay(currentWord: String, disabledLetters: List<Char>) {
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        for (char in currentWord) {
+            Text(
+                text = if (disabledLetters.contains(char)) char.toString() else "_",
+                fontSize = 32.sp,
+                modifier = Modifier.padding(4.dp)
+            )
+        }
+    }
 }
 
 @Composable
@@ -289,7 +303,8 @@ fun Panel2(
 @Composable
 fun Panel3(
     remainingTurns: Int,
-    wordLength: Int
+    currentWord: String,
+    disabledLetters: List<Char>
 ) {
     // Main game play panel (Hangman and word display placeholder)
     Column(
@@ -321,7 +336,7 @@ fun Panel3(
             modifier = Modifier.size(150.dp)
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Text(text = "_ _ _ _ _")  // Placeholder for the word
+        WordDisplay(currentWord = currentWord, disabledLetters = disabledLetters)
     }
 }
 
