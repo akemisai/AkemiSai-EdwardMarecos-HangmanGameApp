@@ -91,14 +91,7 @@ fun Hangman(modifier: Modifier = Modifier) {
             verticalAlignment = Alignment.CenterVertically,
         ) {
             // Layout for Landscape Modd
-            Column (
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Spacer(modifier = Modifier.width(16.dp)) // Space between panels
-                Panel3() // Main game play panel
-            }
+
             Panel1() // Letter selection panel
             Spacer(modifier = Modifier.width(16.dp)) // Space between panels
             Panel2(
@@ -131,8 +124,14 @@ fun Hangman(modifier: Modifier = Modifier) {
                 remainingLetters = remainingLetters, // Pass the temporary remaining letters
                 disabledLetters = disabledLetters // Pass the disabled letters
             ) // Hint button panel
-            Spacer(modifier = Modifier.width(16.dp)) // Space between panels
-            Panel3() // Main game play panel
+            Column (
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Spacer(modifier = Modifier.width(16.dp)) // Space between panels
+                Panel3() // Main game play panel
+            }
         }
     }
 }
