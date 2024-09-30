@@ -122,6 +122,7 @@ fun Hangman(modifier: Modifier = Modifier) {
                     hintClickCount++
                 },
                 remainingLetters = remainingLetters, // Pass the temporary remaining letters
+                hintMessage = hintMessage,
                 disabledLetters = disabledLetters // Pass the disabled letters
             ) // Hint button panel
             Column (
@@ -252,14 +253,25 @@ fun Panel2(
     remainingTurns: Int,
     onHintClicked: () -> Unit,
     remainingLetters: List<Char>,
-    disabledLetters: List<Char> // Add this parameter
+    disabledLetters: List<Char>, // Add this parameter
+    hintMessage: String
 ) {
+    Column(
+        modifier = Modifier
+            .padding(8.dp),
+        verticalArrangement = Arrangement.SpaceEvenly,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Button(onClick = onHintClicked) {
+            Text("Hint")
+        } // Hint button
+        Text(text = "Hint Click Count: $hintClickCount")
+        Text(text = "Hint: $hintMessage")
+    }
     // Create buttons for each remaining letter
 
 
-    Button(onClick = onHintClicked) {
-        Text("Hint")
-    }
+    
 }
 
 
