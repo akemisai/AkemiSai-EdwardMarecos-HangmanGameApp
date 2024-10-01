@@ -25,6 +25,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.hangmangame.ui.theme.HangmanGameTheme
+import androidx.lifecycle.viewmodel.compose.viewModel // Ensure this import is present
+import androidx.lifecycle.ViewModel
 import kotlin.reflect.KProperty
 
 class MainActivity : ComponentActivity() {
@@ -34,8 +36,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             HangmanGameTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+                    val hangmanViewModel: HangmanViewModel = viewModel()// Get the ViewModel instance
                     Hangman(
-                        modifier = Modifier.padding(innerPadding)
+                        modifier = Modifier.padding(innerPadding),
+                        viewModel = hangmanViewModel
                     )
                 }
             }
@@ -44,20 +48,20 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Hangman(modifier: Modifier = Modifier) {
+fun Hangman(modifier: Modifier = Modifier, viewModel: HangmanViewModel) {
     // Game state variables
     val wordHints = mapOf(
         "APPLE" to "Food",
         "DOG" to "Animal",
         "PENCIL" to "Stationery"
     )
-    var currentWord by remember { mutableStateOf(wordHints.keys.random()) } // Random word
-    var currentHint by remember { mutableStateOf(wordHints[currentWord]!!) }
-    var hintLeft by remember { mutableStateOf(3) }
-    var remainingTurns by remember { mutableStateOf(6) }
-    var hintMessage by remember { mutableStateOf("") }
-    var disabledLetters by remember { mutableStateOf<List<Char>>(emptyList()) }
-    var correctLetters by remember { mutableStateOf<List<Char>>(emptyList()) }
+    var currentWord by remember { viewModel.currentWord }
+    var currentHint by remember { viewModel.currentHint }
+    var hintLeft by remember { viewModel.hintLeft }
+    var remainingTurns by remember { viewModel.remainingTurns }
+    var hintMessage by remember { viewModel.hintMessage }
+    var disabledLetters by remember { viewModel.disabledLetters }
+    var correctLetters by remember { viewModel.correctLetters }
     val context = LocalContext.current
 
     // Function to check if the user won bool
@@ -66,12 +70,11 @@ fun Hangman(modifier: Modifier = Modifier) {
     // This function handles letter selection
     val onLetterSelected: (Char) -> Unit = { selectedLetter ->
         if (selectedLetter in currentWord) {
-            correctLetters = correctLetters + selectedLetter
+            viewModel.correctLetters.value = correctLetters + selectedLetter
         } else {
-            remainingTurns--
+            viewModel.remainingTurns.value--
         }
-        // Add the selected letter to disabledLetters
-        disabledLetters = disabledLetters + selectedLetter
+        viewModel.disabledLetters.value = disabledLetters + selectedLetter
     }
 
     // Hint button logic
@@ -117,13 +120,7 @@ fun Hangman(modifier: Modifier = Modifier) {
 
     // Reset game logic
     val resetGame = {
-        remainingTurns = 6
-        hintLeft = 3
-        correctLetters = emptyList()
-        disabledLetters = emptyList()
-        currentWord = wordHints.keys.random()
-        currentHint = wordHints[currentWord]!!
-        hintMessage = ""
+        viewModel.resetGame()
     }
 
     // Detect current orientation
@@ -137,7 +134,6 @@ fun Hangman(modifier: Modifier = Modifier) {
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(text = "Sorry you lost, the correct word was $currentWord", fontSize = 18.sp, modifier = Modifier.padding(bottom = 8.dp))
 
                 Panel3(
                     remainingTurns = remainingTurns,
@@ -392,7 +388,7 @@ fun Panel2(
     hintLeft: Int,
     remainingTurns: Int,
     onHintClicked: () -> Unit,
-    hintMessage: String,
+    hintMessage: String
 ) {
     Row (
         modifier = Modifier.fillMaxWidth(),
@@ -482,23 +478,8 @@ fun HangmanPreview() {
     HangmanGameTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
             Hangman(
-                modifier = Modifier.padding(innerPadding)
-            )
-        }
-    }
-}
-
-@Preview(
-    showSystemUi = true,
-    showBackground = true,
-    device = "spec:width=411dp,height=891dp,dpi=420, isRound=false,chinSize=0dp,orientation=portrait"
-)
-@Composable
-fun HangmanPreviewPortrait() {
-    HangmanGameTheme {
-        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-            Hangman(
-                modifier = Modifier.padding(innerPadding)
+                modifier = Modifier.padding(innerPadding),
+                viewModel = HangmanViewModel()
             )
         }
     }
