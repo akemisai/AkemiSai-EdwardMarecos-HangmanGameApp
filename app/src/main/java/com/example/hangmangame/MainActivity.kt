@@ -51,10 +51,10 @@ fun Hangman(modifier: Modifier = Modifier) {
         "DOG" to "Animal",
         "PENCIL" to "Stationery",
     )
-    var currentWord by remember { mutableStateOf(wordHints.keys.random()) } // Select a random word
-    var currentHint by remember { mutableStateOf(wordHints[currentWord]!!) } // Get corresponding hint
+    val currentWord by remember { mutableStateOf(wordHints.keys.random()) } // Select a random word
+    val currentHint by remember { mutableStateOf(wordHints[currentWord]!!) } // Get corresponding hint
     var hintLeft by remember { mutableStateOf(3) }
-    var remainingTurns by remember { mutableStateOf(11) }
+    var remainingTurns by remember { mutableStateOf(6 ) }
     var hintMessage by remember { mutableStateOf("") } // State variable for the hint message
     var showHint by remember { mutableStateOf(false) } // Flag to show hint
     val context = LocalContext.current
@@ -314,11 +314,11 @@ fun Panel3(
     ) {
         Text(text = "Hangman Drawing Here")
         val imageResId = when (remainingTurns) {
-            11 -> R.drawable.hangman11
-            10 -> R.drawable.hangman10
-            9 -> R.drawable.hangman9
-            8 -> R.drawable.hangman8
-            7 -> R.drawable.hangman7
+//            11 -> R.drawable.hangman11
+//            10 -> R.drawable.hangman10
+//            9 -> R.drawable.hangman9
+//            8 -> R.drawable.hangman8
+//            7 -> R.drawable.hangman7
             6 -> R.drawable.hangman6
             5 -> R.drawable.hangman5
             4 -> R.drawable.hangman4
