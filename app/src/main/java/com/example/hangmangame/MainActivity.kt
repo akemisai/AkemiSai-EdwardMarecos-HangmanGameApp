@@ -103,7 +103,7 @@ fun Hangman(modifier: Modifier = Modifier, viewModel: HangmanViewModel) {
                     // Add the vowels that are in the word to correctLetters
                     correctLetters = correctLetters + vowelsInWord
 
-                    // Disable these vowels
+                    // Disable these vowelsm
                     disabledLetters = disabledLetters + vowels
 
                     remainingTurns--
@@ -151,30 +151,26 @@ fun Hangman(modifier: Modifier = Modifier, viewModel: HangmanViewModel) {
                 }
             }
         }  else if (hasWon) {
-            Row(
-                modifier = modifier.fillMaxWidth().padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
+
+            Column(
+                modifier = modifier.fillMaxSize().padding(16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Column(
-                    modifier = Modifier.weight(1f),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Panel3(
-                        remainingTurns = remainingTurns,
-                        currentWord = currentWord,
-                        correctLetters = correctLetters,
-                        disabledLetters = disabledLetters
-                    )
-                    Spacer(modifier = Modifier.width(16.dp))
 
-                    Text(text = "Congratulations! You guessed the word!", fontSize = 18.sp, modifier = Modifier.padding(bottom = 8.dp))
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Button(onClick = resetGame) {
-                        Text(text = "Play Again")
-                    }
+                Panel3(
+                    remainingTurns = remainingTurns,
+                    currentWord = currentWord,
+                    correctLetters = correctLetters,
+                    disabledLetters = disabledLetters
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(text = "Congratulations! You guessed the word!", fontSize = 18.sp, modifier = Modifier.padding(bottom = 8.dp))
+                Spacer(modifier = Modifier.height(16.dp))
+                Button(onClick = resetGame) {
+                    Text(text = "Reset Game")
                 }
-
             }
         } else {
             Column(
