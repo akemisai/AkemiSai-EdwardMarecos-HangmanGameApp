@@ -45,201 +45,215 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Hangman(modifier: Modifier = Modifier) {
-    // Game state variable
+    // Game state variables
     val wordHints = mapOf(
         "APPLE" to "Food",
         "DOG" to "Animal",
-        "PENCIL" to "Stationery",
+        "PENCIL" to "Stationery"
     )
-    val currentWord by remember { mutableStateOf(wordHints.keys.random()) } // Select a random word
-    val currentHint by remember { mutableStateOf(wordHints[currentWord]!!) } // Get corresponding hint
+    var currentWord by remember { mutableStateOf(wordHints.keys.random()) } // Random word
+    var currentHint by remember { mutableStateOf(wordHints[currentWord]!!) }
     var hintLeft by remember { mutableStateOf(3) }
-    var remainingTurns by remember { mutableStateOf(6 ) }
-    var hintMessage by remember { mutableStateOf("") } // State variable for the hint message
-    var showHint by remember { mutableStateOf(false) } // Flag to show hint
+    var remainingTurns by remember { mutableStateOf(6) }
+    var hintMessage by remember { mutableStateOf("") }
+    var disabledLetters by remember { mutableStateOf<List<Char>>(emptyList()) }
+    var correctLetters by remember { mutableStateOf<List<Char>>(emptyList()) }
     val context = LocalContext.current
 
-    // Temporary placeholder for remaining letters until Panel 1 is complete
-    var remainingLetters by remember { mutableStateOf(('A'..'Z').toList()) }
-    var disabledLetters by remember { mutableStateOf<List<Char>>(emptyList()) }
+    // This function handles letter selection
+    val onLetterSelected: (Char) -> Unit = { selectedLetter ->
+        if (selectedLetter in currentWord) {
+            correctLetters = correctLetters + selectedLetter
+        } else {
+            remainingTurns--
+        }
+        // Add the selected letter to disabledLetters
+        disabledLetters = disabledLetters + selectedLetter
+    }
 
-    // Detect the current orientation using LocalConfiguration
+    // Hint button logic
+    // Make sure to specify the return type explicitly
+    val onHintClicked: () -> Unit = {
+        when (hintLeft) {
+            3 -> {
+                hintMessage = currentHint
+                hintLeft--
+            }
+            2 -> {
+                if (remainingTurns > 1) {
+                    disabledLetters = disableHalfIncorrectLetters(('A'..'Z').toList(), currentWord)
+                    remainingTurns--
+                    hintLeft--
+                } else {
+                    Toast.makeText(context, "Sorry, a hint would result in a loss", Toast.LENGTH_SHORT).show()
+                }
+            }
+            1 -> {
+                if (remainingTurns > 1) {
+                    disabledLetters = showVowels(('A'..'Z').toList())
+                    remainingTurns--
+                    hintLeft--
+                } else {
+                    Toast.makeText(context, "Sorry, a hint would result in a loss", Toast.LENGTH_SHORT).show()
+                }
+            }
+            else -> {
+                Toast.makeText(context, "No hints left", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    // Reset game logic
+    val resetGame = {
+        remainingTurns = 6
+        hintLeft = 3
+        correctLetters = emptyList()
+        disabledLetters = emptyList()
+        currentWord = wordHints.keys.random()
+        currentHint = wordHints[currentWord]!!
+        hintMessage = ""
+    }
+
+    // Detect current orientation
     val configuration = LocalConfiguration.current
     val isPortrait = configuration.orientation == android.content.res.Configuration.ORIENTATION_PORTRAIT
 
     if (isPortrait) {
-        // Portrait layout
         Column(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(16.dp),
+            modifier = modifier.fillMaxSize().padding(16.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Buttons and layout for Portrait Mode
             Text(text = "Portrait Mode - Guess the Word!")
             Spacer(modifier = Modifier.padding(16.dp))
-            Button(onClick = { /*TODO*/ }) {
+            Button(onClick = resetGame) {
                 Text(text = "Reset Game")
             }
-            Panel1()
-            Panel3(remainingTurns = remainingTurns, currentWord = currentWord, disabledLetters = disabledLetters)
+            Panel1(
+                remainingLetters = ('A'..'Z').toList(),
+                disabledLetters = disabledLetters,
+                onLetterSelected = onLetterSelected
+            )
+            Panel3(
+                remainingTurns = remainingTurns,
+                currentWord = currentWord,
+                correctLetters = correctLetters,
+                disabledLetters = disabledLetters
+            )
         }
     } else {
-        // Landscape layout
         Row(
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+            modifier = modifier.fillMaxWidth().padding(16.dp),
             horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            // Layout for Landscape Mode
-
-            Panel1() // Letter selection panel
-            Spacer(modifier = Modifier.width(16.dp)) // Space between panels
-            Panel2(
-                hintLeft = hintLeft,
-                remainingTurns = remainingTurns,
-                onHintClicked = {
-                    when (hintLeft) {
-                        3 -> {
-                            hintMessage = currentHint // Set the hint message
-                            showHint = true // Show the hint
-                            hintLeft--
-                        } // Show the hint on the first click
-                        2 -> {
-                            if (remainingTurns > 1) {
-                                disabledLetters = disableHalfIncorrectLetters(remainingLetters, currentWord)
-                                remainingTurns--
-                                hintLeft--
-                            }
-                        }
-                        1 -> {
-                            if (remainingTurns > 1) {
-                                showVowels(remainingLetters) // Implement this function
-                                remainingTurns--
-                                hintLeft--
-                            }
-                        }
-                        else -> {
-                            Toast.makeText(context, "Hint not available", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-
-                },
-                remainingLetters = remainingLetters, // Pass the temporary remaining letters
-                hintMessage = hintMessage,
-                disabledLetters = disabledLetters // Pass the disabled letters
-            ) // Hint button panel
-            Column (
+            Column(
                 modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Panel1(
+                    remainingLetters = ('A'..'Z').toList(),
+                    disabledLetters = disabledLetters,
+                    onLetterSelected = onLetterSelected
+                )
+                Panel2(
+                    hintLeft = hintLeft,
+                    remainingTurns = remainingTurns, // Keep this passed in Panel2
+                    onHintClicked = onHintClicked,
+                    hintMessage = hintMessage
+                )
+            }
+            Column(
+                modifier = Modifier.weight(1f),
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Spacer(modifier = Modifier.width(16.dp)) // Space between panels
                 Panel3(
                     remainingTurns = remainingTurns,
                     currentWord = currentWord,
+                    correctLetters = correctLetters,
                     disabledLetters = disabledLetters
-                ) // Main game play panel
+                )
             }
         }
     }
 }
 
-private operator fun Any.getValue(nothing: Nothing?, property: KProperty<*>): Any {
-    TODO("Not yet implemented")
-}
+//private operator fun Any.getValue(nothing: Nothing?, property: KProperty<*>): Any {
+//    TODO("Not yet implemented")
+//}
 
 @Composable
-fun Panel1() {
-    // Letter selection panel: A - J buttons in a grid with two rows
+fun Panel1(
+    remainingLetters: List<Char>, // This will be a list of all letters A-Z
+    disabledLetters: List<Char>, // This will be a list of letters that are disabled after being selected
+    onLetterSelected: (Char) -> Unit // This will be a function to handle letter selection
+) {
     Column(
-        modifier = Modifier
-            .padding(8.dp),
+        modifier = Modifier.padding(8.dp),
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(text = "CHOOSE A LETTER", fontSize = 18.sp, modifier = Modifier.padding(bottom = 8.dp))
 
-        // First row: A-f
-        Row(
-            modifier = Modifier,
-//                .fillMaxWidth()
-//                .weight(1f),
-            horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-            LetterButton("A")
-            LetterButton("B")
-            LetterButton("C")
-            LetterButton("D")
-            LetterButton("E")
-            LetterButton("F")
+        // First row: A-F
+        Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            remainingLetters.subList(0, 6).forEach { letter ->
+                LetterButton(letter = letter, disabledLetters = disabledLetters, onLetterSelected = onLetterSelected)
+            }
         }
 
         Spacer(modifier = Modifier.height(3.dp)) // Space between rows
 
-        // Second row: h-l
+        // Second row: G-L
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-            LetterButton("G")
-            LetterButton("H")
-            LetterButton("I")
-            LetterButton("J")
-            LetterButton("K")
-            LetterButton("L")
+            remainingLetters.subList(6, 12).forEach { letter ->
+                LetterButton(letter = letter, disabledLetters = disabledLetters, onLetterSelected = onLetterSelected)
+            }
         }
 
         Spacer(modifier = Modifier.height(3.dp)) // Space between rows
 
-        // Third row: m-r
+        // Third row: M-R
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-            LetterButton(
-                letter = "M",
-                modifier = Modifier
-                    .weight(1f)
-            )
-            LetterButton("N")
-            LetterButton("O")
-            LetterButton("P")
-            LetterButton("Q")
-            LetterButton("R")
-
+            remainingLetters.subList(12, 18).forEach { letter ->
+                LetterButton(letter = letter, disabledLetters = disabledLetters, onLetterSelected = onLetterSelected)
+            }
         }
 
         Spacer(modifier = Modifier.height(3.dp)) // Space between rows
 
-        // Fourth row: s-x
+        // Fourth row: S-X
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-            LetterButton("S")
-            LetterButton("T")
-            LetterButton("U")
-            LetterButton("V")
-            LetterButton("W")
-            LetterButton("X")
+            remainingLetters.subList(18, 24).forEach { letter ->
+                LetterButton(letter = letter, disabledLetters = disabledLetters, onLetterSelected = onLetterSelected)
+            }
         }
 
         Spacer(modifier = Modifier.height(3.dp)) // Space between rows
 
-        // Fifth row: y-z
+        // Fifth row: Y-Z
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-            LetterButton("Y")
-            LetterButton("Z")
+            remainingLetters.subList(24, 26).forEach { letter ->
+                LetterButton(letter = letter, disabledLetters = disabledLetters, onLetterSelected = onLetterSelected)
+            }
         }
     }
 }
 
 // Helper function for Panel1
 @Composable
-fun LetterButton(letter: String, modifier: Modifier = Modifier) {
+fun LetterButton(letter: Char, disabledLetters: List<Char>, onLetterSelected: (Char) -> Unit) {
     Button(
-        onClick = { /* Handle letter selection */ },
+        onClick = { onLetterSelected(letter) }, // Handle letter selection
         shape = RoundedCornerShape(4.dp),
         modifier = Modifier
-            .size(38.dp) // Slightly smaller button size for compact and visibility
-            .padding(2.dp), // Reduce padding for a tighter layout
-        contentPadding = PaddingValues(0.dp) // Remove default content padding
+            .size(38.dp) // Size of the button
+            .padding(2.dp), // Padding around the button
+        contentPadding = PaddingValues(0.dp), // Remove default content padding
+        enabled = !disabledLetters.contains(letter) // Disable the button if the letter has been selected
     ) {
-        Text(text = letter, fontSize = 16.sp) // Adjust font size for better fit
+        Text(text = letter.toString(), fontSize = 16.sp)
     }
 }
 
@@ -257,56 +271,42 @@ fun disableHalfIncorrectLetters(remainingLetters: List<Char>, currentWord: Strin
     return lettersToDisable
 }
 
-// Helper function for Panel3
-@Composable
-fun WordDisplay(currentWord: String, disabledLetters: List<Char>) {
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        for (char in currentWord) {
-            Text(
-                text = if (disabledLetters.contains(char)) char.toString() else "_",
-                fontSize = 32.sp,
-                modifier = Modifier.padding(4.dp)
-            )
-        }
-    }
-}
-
 @Composable
 fun Panel2(
     hintLeft: Int,
     remainingTurns: Int,
     onHintClicked: () -> Unit,
-    remainingLetters: List<Char>,
-    disabledLetters: List<Char>, // Add this parameter
     hintMessage: String
 ) {
     Column(
-        modifier = Modifier
-            .padding(8.dp),
-        verticalArrangement = Arrangement.SpaceEvenly,
+        modifier = Modifier.padding(16.dp).fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Button(onClick = onHintClicked) {
-            Text("Hint")
-        } // Hint button
-        Text(text = "$hintLeft hints left")
-        Text(text = "Hint: $hintMessage")
+        Row (
+            modifier = Modifier.fillMaxWidth().weight(1f),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Button(onClick = onHintClicked) {
+                Text(text = "Use Hint")
+            }
+            Column() {
+                Text(text = "Hints left: $hintLeft", fontSize = 16.sp)
+                Text(text = "Remaining Turns: $remainingTurns", fontSize = 16.sp)  // Display remainingTurns
+        }
+            Text(text = "Hint: $hintMessage", fontSize = 16.sp)}
     }
-    // Create buttons for each remaining letter
-
-
-    
 }
-
 
 
 @Composable
 fun Panel3(
     remainingTurns: Int,
     currentWord: String,
-    disabledLetters: List<Char>
+    correctLetters: List<Char>, // Pass correct letters guessed
+    disabledLetters: List<Char> // Pass disabled letters
 ) {
-    // Main game play panel (Hangman and word display placeholder)
     Column(
         modifier = Modifier.padding(16.dp),
         verticalArrangement = Arrangement.SpaceEvenly,
@@ -314,11 +314,6 @@ fun Panel3(
     ) {
         Text(text = "Hangman Drawing Here")
         val imageResId = when (remainingTurns) {
-//            11 -> R.drawable.hangman11
-//            10 -> R.drawable.hangman10
-//            9 -> R.drawable.hangman9
-//            8 -> R.drawable.hangman8
-//            7 -> R.drawable.hangman7
             6 -> R.drawable.hangman6
             5 -> R.drawable.hangman5
             4 -> R.drawable.hangman4
@@ -327,7 +322,6 @@ fun Panel3(
             1 -> R.drawable.hangman1
             0 -> R.drawable.hangman0
             else -> R.drawable.hangman0 // Default case for when the player loses
-
         }
 
         Image(
@@ -336,7 +330,21 @@ fun Panel3(
             modifier = Modifier.size(150.dp)
         )
         Spacer(modifier = Modifier.height(16.dp))
-        WordDisplay(currentWord = currentWord, disabledLetters = disabledLetters)
+        WordDisplay(currentWord = currentWord, correctLetters = correctLetters)
+    }
+}
+
+// Helper function for Panel3
+@Composable
+fun WordDisplay(currentWord: String, correctLetters: List<Char>) {
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        for (char in currentWord) {
+            Text(
+                text = if (correctLetters.contains(char)) char.toString() else "_", // Display correct letters
+                fontSize = 32.sp,
+                modifier = Modifier.padding(4.dp)
+            )
+        }
     }
 }
 
@@ -355,3 +363,19 @@ fun HangmanPreview() {
         }
     }
 }
+
+//@Preview(
+//    showSystemUi = true,
+//    showBackground = true,
+//    device = "spec:width=411dp,height=891dp,dpi=420, isRound=false,chinSize=0dp,orientation=portrait"
+//)
+//@Composable
+//fun HangmanPreviewPortrait() {
+//    HangmanGameTheme {
+//        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+//            Hangman(
+//                modifier = Modifier.padding(innerPadding)
+//            )
+//        }
+//    }
+//}
