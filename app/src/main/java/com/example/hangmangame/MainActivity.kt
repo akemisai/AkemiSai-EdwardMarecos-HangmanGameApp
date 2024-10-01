@@ -80,8 +80,8 @@ fun Hangman(modifier: Modifier = Modifier) {
                 hintLeft--
             }
             2 -> {
-                if (remainingTurns > 1) {
-                    disabledLetters = disableHalfIncorrectLetters(('A'..'Z').toList(), currentWord)
+                if (remainingTurns > 1) {       //half of remaining incorrect letters
+                    disabledLetters = disabledLetters + disableHalfIncorrectLetters(('A'..'Z').toList(), currentWord)
                     remainingTurns--
                     hintLeft--
                 } else {
@@ -89,8 +89,17 @@ fun Hangman(modifier: Modifier = Modifier) {
                 }
             }
             1 -> {
-                if (remainingTurns > 1) {
-                    disabledLetters = showVowels(('A'..'Z').toList())
+                if (remainingTurns > 1) {       //vowels
+                    // Show vowels and add them to correct letters
+                    val vowels = showVowels(('A'..'Z').toList())
+                    val vowelsInWord = vowels.filter { it in currentWord }
+
+                    // Add the vowels that are in the word to correctLetters
+                    correctLetters = correctLetters + vowelsInWord
+
+                    // Disable these vowels
+                    disabledLetters = disabledLetters + vowels
+
                     remainingTurns--
                     hintLeft--
                 } else {
@@ -278,24 +287,32 @@ fun Panel2(
     onHintClicked: () -> Unit,
     hintMessage: String
 ) {
-    Column(
-        modifier = Modifier.padding(16.dp).fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+    Row (
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        Row (
-            modifier = Modifier.fillMaxWidth().weight(1f),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.weight(1.5f)
+        ) {
+            Text(text = "Hints left: $hintLeft", fontSize = 16.sp)
+            Text(text = "Remaining Turns: $remainingTurns", fontSize = 16.sp)  // Display remainingTurns
+        }
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.weight(1f)
         ) {
             Button(onClick = onHintClicked) {
                 Text(text = "Use Hint")
             }
-            Column() {
-                Text(text = "Hints left: $hintLeft", fontSize = 16.sp)
-                Text(text = "Remaining Turns: $remainingTurns", fontSize = 16.sp)  // Display remainingTurns
         }
-            Text(text = "Hint: $hintMessage", fontSize = 16.sp)}
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.weight(1.5f)
+        ) {
+            Text(text = "Hint: $hintMessage", fontSize = 16.sp)
+        }
     }
 }
 
