@@ -141,6 +141,11 @@ fun Hangman(modifier: Modifier = Modifier, viewModel: HangmanViewModel) {
                     correctLetters = correctLetters,
                     disabledLetters = disabledLetters
                 )
+
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(text = "Sorry you lost, the correct word was $currentWord", fontSize = 18.sp, modifier = Modifier.padding(bottom = 8.dp))
+
+                Spacer(modifier = Modifier.height(16.dp))
                 Button(onClick = resetGame) {
                     Text(text = "Reset Game")
                 }
@@ -155,12 +160,6 @@ fun Hangman(modifier: Modifier = Modifier, viewModel: HangmanViewModel) {
                     modifier = Modifier.weight(1f),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    Text(text = "Congratulations! You guessed the word!", fontSize = 18.sp, modifier = Modifier.padding(bottom = 8.dp))
-                }
-                Column(
-                    modifier = Modifier.weight(1f),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
                     Panel3(
                         remainingTurns = remainingTurns,
                         currentWord = currentWord,
@@ -168,10 +167,14 @@ fun Hangman(modifier: Modifier = Modifier, viewModel: HangmanViewModel) {
                         disabledLetters = disabledLetters
                     )
                     Spacer(modifier = Modifier.width(16.dp))
+
+                    Text(text = "Congratulations! You guessed the word!", fontSize = 18.sp, modifier = Modifier.padding(bottom = 8.dp))
+                    Spacer(modifier = Modifier.width(16.dp))
                     Button(onClick = resetGame) {
                         Text(text = "Play Again")
                     }
                 }
+
             }
         } else {
             Column(
@@ -179,17 +182,19 @@ fun Hangman(modifier: Modifier = Modifier, viewModel: HangmanViewModel) {
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Panel1(
-                    remainingLetters = ('A'..'Z').toList(),
-                    disabledLetters = disabledLetters,
-                    onLetterSelected = onLetterSelected
-                )
+
                 Panel3(
                     remainingTurns = remainingTurns,
                     currentWord = currentWord,
                     correctLetters = correctLetters,
                     disabledLetters = disabledLetters
                 )
+                Panel1(
+                    remainingLetters = ('A'..'Z').toList(),
+                    disabledLetters = disabledLetters,
+                    onLetterSelected = onLetterSelected
+                )
+
                 Button(onClick = resetGame) {
                     Text(text = "Reset Game")
                 }
