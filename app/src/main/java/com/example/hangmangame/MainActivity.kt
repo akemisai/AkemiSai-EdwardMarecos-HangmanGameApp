@@ -144,13 +144,6 @@ fun Hangman(modifier: Modifier = Modifier) {
                 correctLetters = correctLetters,
                 disabledLetters = disabledLetters
             )
-            Panel2(
-                hintLeft = hintLeft,
-                remainingTurns = remainingTurns, // Keep this passed in Panel2
-                onHintClicked = onHintClicked,
-                hintMessage = hintMessage,
-                port = true
-            )
             Button(onClick = resetGame) {
                 Text(text = "Reset Game")
             }
@@ -175,7 +168,6 @@ fun Hangman(modifier: Modifier = Modifier) {
                     remainingTurns = remainingTurns, // Keep this passed in Panel2
                     onHintClicked = onHintClicked,
                     hintMessage = hintMessage,
-                    port = false
                 )
             }
             Column(
@@ -291,59 +283,32 @@ fun Panel2(
     remainingTurns: Int,
     onHintClicked: () -> Unit,
     hintMessage: String,
-    port: Boolean
 ) {
-    if (port) {
-        Row (
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+    Row (
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.weight(1.5f)
         ) {
-
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.weight(1f)
-            ) {
-                Button(onClick = onHintClicked) {
-                    Text(text = "Use Hint")
-                }
-            }
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(text = "Hints left: $hintLeft", fontSize = 16.sp)
-                Text(text = "Remaining Turns: $remainingTurns", fontSize = 16.sp)  // Display remainingTurns
-                Text(text = "Hint: $hintMessage", fontSize = 16.sp)
+            Text(text = "Hints left: $hintLeft", fontSize = 16.sp)
+            Text(text = "Remaining Turns: $remainingTurns", fontSize = 16.sp)  // Display remainingTurns
+        }
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.weight(1f)
+        ) {
+            Button(onClick = onHintClicked) {
+                Text(text = "Use Hint")
             }
         }
-    } else {
-        Row (
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.weight(1.5f)
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.weight(1.5f)
-            ) {
-                Text(text = "Hints left: $hintLeft", fontSize = 16.sp)
-                Text(text = "Remaining Turns: $remainingTurns", fontSize = 16.sp)  // Display remainingTurns
-            }
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.weight(1f)
-            ) {
-                Button(onClick = onHintClicked) {
-                    Text(text = "Use Hint")
-                }
-            }
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.weight(1.5f)
-            ) {
-                Text(text = "Hint: $hintMessage", fontSize = 16.sp)
-            }
+            Text(text = "Hint: $hintMessage", fontSize = 16.sp)
         }
     }
 }
