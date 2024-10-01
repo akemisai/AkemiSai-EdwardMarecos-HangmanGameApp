@@ -133,11 +133,6 @@ fun Hangman(modifier: Modifier = Modifier) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "Portrait Mode - Guess the Word!")
-            Spacer(modifier = Modifier.padding(16.dp))
-            Button(onClick = resetGame) {
-                Text(text = "Reset Game")
-            }
             Panel1(
                 remainingLetters = ('A'..'Z').toList(),
                 disabledLetters = disabledLetters,
@@ -149,6 +144,16 @@ fun Hangman(modifier: Modifier = Modifier) {
                 correctLetters = correctLetters,
                 disabledLetters = disabledLetters
             )
+            Panel2(
+                hintLeft = hintLeft,
+                remainingTurns = remainingTurns, // Keep this passed in Panel2
+                onHintClicked = onHintClicked,
+                hintMessage = hintMessage,
+                port = true
+            )
+            Button(onClick = resetGame) {
+                Text(text = "Reset Game")
+            }
         }
     } else {
         Row(
@@ -169,28 +174,28 @@ fun Hangman(modifier: Modifier = Modifier) {
                     hintLeft = hintLeft,
                     remainingTurns = remainingTurns, // Keep this passed in Panel2
                     onHintClicked = onHintClicked,
-                    hintMessage = hintMessage
+                    hintMessage = hintMessage,
+                    port = false
                 )
             }
             Column(
                 modifier = Modifier.weight(1f),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Spacer(modifier = Modifier.width(16.dp)) // Space between panels
                 Panel3(
                     remainingTurns = remainingTurns,
                     currentWord = currentWord,
                     correctLetters = correctLetters,
                     disabledLetters = disabledLetters
                 )
+                Spacer(modifier = Modifier.width(16.dp))
+                Button(onClick = resetGame) {
+                    Text(text = "Reset Game")
+                }
             }
         }
     }
 }
-
-//private operator fun Any.getValue(nothing: Nothing?, property: KProperty<*>): Any {
-//    TODO("Not yet implemented")
-//}
 
 @Composable
 fun Panel1(
@@ -285,33 +290,60 @@ fun Panel2(
     hintLeft: Int,
     remainingTurns: Int,
     onHintClicked: () -> Unit,
-    hintMessage: String
+    hintMessage: String,
+    port: Boolean
 ) {
-    Row (
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.weight(1.5f)
+    if (port) {
+        Row (
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "Hints left: $hintLeft", fontSize = 16.sp)
-            Text(text = "Remaining Turns: $remainingTurns", fontSize = 16.sp)  // Display remainingTurns
-        }
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.weight(1f)
-        ) {
-            Button(onClick = onHintClicked) {
-                Text(text = "Use Hint")
+
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.weight(1f)
+            ) {
+                Button(onClick = onHintClicked) {
+                    Text(text = "Use Hint")
+                }
+            }
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(text = "Hints left: $hintLeft", fontSize = 16.sp)
+                Text(text = "Remaining Turns: $remainingTurns", fontSize = 16.sp)  // Display remainingTurns
+                Text(text = "Hint: $hintMessage", fontSize = 16.sp)
             }
         }
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.weight(1.5f)
+    } else {
+        Row (
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = "Hint: $hintMessage", fontSize = 16.sp)
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.weight(1.5f)
+            ) {
+                Text(text = "Hints left: $hintLeft", fontSize = 16.sp)
+                Text(text = "Remaining Turns: $remainingTurns", fontSize = 16.sp)  // Display remainingTurns
+            }
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.weight(1f)
+            ) {
+                Button(onClick = onHintClicked) {
+                    Text(text = "Use Hint")
+                }
+            }
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.weight(1.5f)
+            ) {
+                Text(text = "Hint: $hintMessage", fontSize = 16.sp)
+            }
         }
     }
 }
@@ -381,18 +413,18 @@ fun HangmanPreview() {
     }
 }
 
-//@Preview(
-//    showSystemUi = true,
-//    showBackground = true,
-//    device = "spec:width=411dp,height=891dp,dpi=420, isRound=false,chinSize=0dp,orientation=portrait"
-//)
-//@Composable
-//fun HangmanPreviewPortrait() {
-//    HangmanGameTheme {
-//        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-//            Hangman(
-//                modifier = Modifier.padding(innerPadding)
-//            )
-//        }
-//    }
-//}
+@Preview(
+    showSystemUi = true,
+    showBackground = true,
+    device = "spec:width=411dp,height=891dp,dpi=420, isRound=false,chinSize=0dp,orientation=portrait"
+)
+@Composable
+fun HangmanPreviewPortrait() {
+    HangmanGameTheme {
+        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+            Hangman(
+                modifier = Modifier.padding(innerPadding)
+            )
+        }
+    }
+}
