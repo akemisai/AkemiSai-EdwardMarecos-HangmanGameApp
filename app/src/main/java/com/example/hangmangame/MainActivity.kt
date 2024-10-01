@@ -60,6 +60,9 @@ fun Hangman(modifier: Modifier = Modifier) {
     var correctLetters by remember { mutableStateOf<List<Char>>(emptyList()) }
     val context = LocalContext.current
 
+    // Function to check if the user won bool
+    val hasWon = correctLetters.containsAll(currentWord.toSet())
+
     // This function handles letter selection
     val onLetterSelected: (Char) -> Unit = { selectedLetter ->
         if (selectedLetter in currentWord) {
@@ -128,61 +131,167 @@ fun Hangman(modifier: Modifier = Modifier) {
     val isPortrait = configuration.orientation == android.content.res.Configuration.ORIENTATION_PORTRAIT
 
     if (isPortrait) {
-        Column(
-            modifier = modifier.fillMaxSize().padding(16.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Panel1(
-                remainingLetters = ('A'..'Z').toList(),
-                disabledLetters = disabledLetters,
-                onLetterSelected = onLetterSelected
-            )
-            Panel3(
-                remainingTurns = remainingTurns,
-                currentWord = currentWord,
-                correctLetters = correctLetters,
-                disabledLetters = disabledLetters
-            )
-            Button(onClick = resetGame) {
-                Text(text = "Reset Game")
-            }
-        }
-    } else {
-        Row(
-            modifier = modifier.fillMaxWidth().padding(16.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+        if (remainingTurns == 0) {
             Column(
-                modifier = Modifier.weight(1f),
-                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = modifier.fillMaxSize().padding(16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Panel1(
-                    remainingLetters = ('A'..'Z').toList(),
-                    disabledLetters = disabledLetters,
-                    onLetterSelected = onLetterSelected
-                )
-                Panel2(
-                    hintLeft = hintLeft,
-                    remainingTurns = remainingTurns, // Keep this passed in Panel2
-                    onHintClicked = onHintClicked,
-                    hintMessage = hintMessage,
-                )
-            }
-            Column(
-                modifier = Modifier.weight(1f),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
+
                 Panel3(
                     remainingTurns = remainingTurns,
                     currentWord = currentWord,
                     correctLetters = correctLetters,
                     disabledLetters = disabledLetters
                 )
-                Spacer(modifier = Modifier.width(16.dp))
                 Button(onClick = resetGame) {
                     Text(text = "Reset Game")
+                }
+            }
+        }  else if (hasWon) {
+            Row(
+                modifier = modifier.fillMaxWidth().padding(16.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Text(text = "Congratulations! You guessed the word!", fontSize = 18.sp, modifier = Modifier.padding(bottom = 8.dp))
+                }
+                Column(
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Panel3(
+                        remainingTurns = remainingTurns,
+                        currentWord = currentWord,
+                        correctLetters = correctLetters,
+                        disabledLetters = disabledLetters
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Button(onClick = resetGame) {
+                        Text(text = "Play Again")
+                    }
+                }
+            }
+        } else {
+            Column(
+                modifier = modifier.fillMaxSize().padding(16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Panel1(
+                    remainingLetters = ('A'..'Z').toList(),
+                    disabledLetters = disabledLetters,
+                    onLetterSelected = onLetterSelected
+                )
+                Panel3(
+                    remainingTurns = remainingTurns,
+                    currentWord = currentWord,
+                    correctLetters = correctLetters,
+                    disabledLetters = disabledLetters
+                )
+                Button(onClick = resetGame) {
+                    Text(text = "Reset Game")
+                }
+            }
+        }
+    } else {
+        if (remainingTurns == 0) {
+            Row(
+                modifier = modifier.fillMaxWidth().padding(16.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Text(text = "Sorry you lost, the correct word was $currentWord", fontSize = 18.sp, modifier = Modifier.padding(bottom = 8.dp))
+
+                }
+                Column(
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Panel3(
+                        remainingTurns = remainingTurns,
+                        currentWord = currentWord,
+                        correctLetters = correctLetters,
+                        disabledLetters = disabledLetters
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Button(onClick = resetGame) {
+                        Text(text = "Reset Game")
+                    }
+                }
+            }
+        } else if (hasWon) {
+            Row(
+                modifier = modifier.fillMaxWidth().padding(16.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Text(text = "Congratulations! You guessed the word!", fontSize = 18.sp, modifier = Modifier.padding(bottom = 8.dp))
+                }
+                Column(
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Panel3(
+                        remainingTurns = remainingTurns,
+                        currentWord = currentWord,
+                        correctLetters = correctLetters,
+                        disabledLetters = disabledLetters
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Button(onClick = resetGame) {
+                        Text(text = "Play Again")
+                    }
+                }
+            }
+        } else {
+            Row(
+                modifier = modifier.fillMaxWidth().padding(16.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Panel1(
+                        remainingLetters = ('A'..'Z').toList(),
+                        disabledLetters = disabledLetters,
+                        onLetterSelected = onLetterSelected
+                    )
+                    Panel2(
+                        hintLeft = hintLeft,
+                        remainingTurns = remainingTurns, // Keep this passed in Panel2
+                        onHintClicked = onHintClicked,
+                        hintMessage = hintMessage,
+                    )
+                }
+                Column(
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Panel3(
+                        remainingTurns = remainingTurns,
+                        currentWord = currentWord,
+                        correctLetters = correctLetters,
+                        disabledLetters = disabledLetters
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Button(onClick = resetGame) {
+                        Text(text = "Reset Game")
+                    }
                 }
             }
         }
