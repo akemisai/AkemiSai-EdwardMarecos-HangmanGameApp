@@ -137,6 +137,7 @@ fun Hangman(modifier: Modifier = Modifier) {
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Text(text = "Sorry you lost, the correct word was $currentWord", fontSize = 18.sp, modifier = Modifier.padding(bottom = 8.dp))
 
                 Panel3(
                     remainingTurns = remainingTurns,
